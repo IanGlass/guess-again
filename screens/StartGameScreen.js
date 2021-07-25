@@ -6,7 +6,8 @@ import {
   Button,
   TouchableWithoutFeedback,
   Keyboard,
-  Alert
+  Alert,
+  Dimensions
 } from 'react-native';
 
 import TitleText from '../components/TitleText';
@@ -111,8 +112,9 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   inputContainer: {
-    width: 300,
-    maxWidth: '80%',
+    width: Dimensions.get('window').width / 4,
+    minWidth: 300,
+    maxWidth: '95%',
     alignItems: 'center'
   },
   buttonsContainer: {
