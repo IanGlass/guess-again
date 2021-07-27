@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Text, Alert, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Alert, ScrollView, useWindowDimensions, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import NumberContainer from '../components/NumberContainer';
@@ -22,6 +22,8 @@ const GameScreen = ({ userChoice, onGameOver }) => {
   const initialGuess = generateRandomBetween(1, 100, userChoice)
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
   const [pastGuesses, setPastGuesses] = useState([initialGuess]);
+
+  const dimensions = useWindowDimensions();
 
   const lowerBound = useRef(1);
   const upperBound = useRef(100);
@@ -58,19 +60,49 @@ const GameScreen = ({ userChoice, onGameOver }) => {
     };
   }, [currentGuess]);
 
+  if (dimensions.height > 500) {
+    return (
+      <View style={styles.screen}>
+        <Text>Opponent's Guess</Text>
+        <NumberContainer>{currentGuess}</NumberContainer>
+
+        <Card style={styles.buttonsContainer}>
+          <MainButton
+            onPress={() => nextGuess('lower')}
+          ><Ionicons name="md-remove" size={24} color="white" /></MainButton>
+          <MainButton
+            onPress={() => nextGuess('higher')}
+          ><Ionicons name="md-add" size={24} color="white" /></MainButton>
+        </Card>
+
+        <View style={styles.listContainer}>
+          <ScrollView contentContainerStyle={styles.list}>
+            {pastGuesses.map((guess, index) => (
+              <View style={styles.listItem} key={index}>
+                <BodyText>#{pastGuesses.length - (index)}</BodyText>
+                <BodyText>{guess}</BodyText>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <Text>Opponent's Guess</Text>
-      <NumberContainer>{currentGuess}</NumberContainer>
-
-      <Card style={styles.buttonsContainer}>
+      <View style={styles.controls}>
         <MainButton
           onPress={() => nextGuess('lower')}
-        ><Ionicons name="md-remove" size={24} color="white" /></MainButton>
+        ><Ionicons name="md-remove" size={24} color="white" />
+        </MainButton>
+        <NumberContainer>{currentGuess}</NumberContainer>
         <MainButton
           onPress={() => nextGuess('higher')}
-        ><Ionicons name="md-add" size={24} color="white" /></MainButton>
-      </Card>
+        ><Ionicons name="md-add" size={24} color="white" />
+        </MainButton>
+      </View>
 
       <View style={styles.listContainer}>
         <ScrollView contentContainerStyle={styles.list}>
@@ -87,6 +119,12 @@ const GameScreen = ({ userChoice, onGameOver }) => {
 };
 
 const styles = StyleSheet.create({
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '80%',
+    alignItems: 'center'
+  },
   screen: {
     flex: 1,
     padding: 10,
